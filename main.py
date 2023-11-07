@@ -7,7 +7,7 @@ class SolarSystemBody(turtle.Turtle):
     min_display_size = 20
     display_log_base = 1.1
 
-    def __init__(self, solar_system, mass, position=(0, 0), velocity=(0, 0)):
+    def __init__(self, solar_system, mass, position=[0, 0], velocity=[0, 0]):
         super().__init__()
         self.mass = mass
         self.setposition(position)
@@ -40,16 +40,39 @@ class SolarSystem:
     def remove_body(self, body):
         self.bodies.remove(body)
 
+    def get_acceleration(self, body1, body2):
+        p1x, p1y = body1.xcor(), body1.ycor()
+        p2x, p2y = body2.xcor(), body2.ycor()
+        distanceX = (p2x-p1x)
+        distanceY = (p2y - p1y)
+        absoluteDistance = (distanceX**2 + distanceY**2)**(0.5)
+
+        a = body2.mass * 0.01 / (distanceX**2 + distanceY**2)
+        ax = a * (distanceX)/absoluteDistance
+        print(f'ax {ax}')
+        ay = a * (distanceY)/absoluteDistance
+        return [ax, ay]
+
+    def total_acc(self, chosen_body):
+        acc = [0, 0]
+        for body in self.bodies:
+            if (body != chosen_body):
+                new_acc = self.get_acceleration(chosen_body, body)
+                acc[0] += new_acc[0]
+                acc[1] += new_acc[1]
+        chosen_body.velocity = acc
+
     def update_all(self):
         for body in self.bodies:
             body.move()
             body.draw()
         self.solar_system.update()
+
     pass
 
 
 class Sun(SolarSystemBody):
-    def __init__(self, solar_system, mass, position=(0, 0), velocity=(0, 0)):
+    def __init__(self, solar_system, mass, position=[0, 0], velocity=[0, 0]):
         super().__init__(solar_system, mass, position, velocity)
         self.color('yellow')
     pass
