@@ -22,8 +22,8 @@ class SolarSystemBody(turtle.Turtle):
         self.dot(self.display_size)
 
     def move(self):
-        self.setx(self.xcor() + self.velocity[0])
-        self.sety(self.ycor() + self.velocity[1])
+        self.setx(self.xcor() + self.velocity[0]*0.02)
+        self.sety(self.ycor() + self.velocity[1]*0.02)
 
 
 class SolarSystem:
@@ -45,9 +45,11 @@ class SolarSystem:
         p2x, p2y = body2.xcor(), body2.ycor()
         distanceX = (p2x-p1x)
         distanceY = (p2y - p1y)
+        if (distanceX**2 + distanceY**2 == 0):
+            return
         absoluteDistance = (distanceX**2 + distanceY**2)**(0.5)
 
-        a = body2.mass * 0.01 / (distanceX**2 + distanceY**2)
+        a = body2.mass / (distanceX**2 + distanceY**2)
         ax = a * (distanceX)/absoluteDistance
         print(f'ax {ax}')
         ay = a * (distanceY)/absoluteDistance
@@ -58,9 +60,10 @@ class SolarSystem:
         for body in self.bodies:
             if (body != chosen_body):
                 new_acc = self.get_acceleration(chosen_body, body)
-                acc[0] += new_acc[0]
-                acc[1] += new_acc[1]
-        chosen_body.velocity = acc
+                acc[0] += new_acc[0]*0.02
+                acc[1] += new_acc[1]*0.02
+        chosen_body.velocity[0] += acc[0]
+        chosen_body.velocity[1] += acc[1]
 
     def update_all(self):
         for body in self.bodies:
@@ -79,7 +82,7 @@ class Sun(SolarSystemBody):
 
 
 class Planet(SolarSystemBody):
-    colours = itertools.cycle(['red', 'green', 'bue'])
+    colours = itertools.cycle(['red', 'green', 'yellow'])
 
     def __init__(self, solar_system, mass, position, velocity):
         super().__init__(solar_system, mass, position, velocity)
